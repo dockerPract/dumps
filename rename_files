@@ -1,0 +1,26 @@
+# Define the parent directory containing the folders
+$parentDir = "C:\path\to\parent_directory"
+
+# Get all folders starting with 'ref_atomic_'
+$folders = Get-ChildItem -Path $parentDir -Directory | Where-Object { $_.Name -like "ref_atomic_*" }
+
+foreach ($folder in $folders) {
+    # Extract the folder name without the 'ref_atomic_' prefix
+    $folderName = $folder.Name.Substring(11)
+
+    # Get all files in the current folder
+    $files = Get-ChildItem -Path $folder.FullName -File
+
+    foreach ($file in $files) {
+        # Define the new filename with the required prefix
+        $newFileName = "t_ref_atomic_$folderName" + "_" + $file.Name
+
+        # Define the full path for the new file
+        $newFilePath = Join-Path -Path $folder.FullName -ChildPath $newFileName
+
+        # Rename the file
+        Rename-Item -Path $file.FullName -NewName $newFilePath
+
+        Write-Output "Renamed $($file.FullName) to $newFilePath"
+    }
+}
